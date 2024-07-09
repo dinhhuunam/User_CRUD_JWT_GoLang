@@ -73,9 +73,9 @@ func main() {
 		users := v1.Group("/users")
 		{
 			users.POST("", CreateUser(db))
-			users.GET("")
+			users.GET("", ListUser(db))
 			users.GET("/:id", readUserById(db))
-			users.PATCH("/:id")
+			users.PATCH("/:id", editUserById(db))
 			users.DELETE("/:id")
 		}
 	}
@@ -158,6 +158,24 @@ func editUserById(db *gorm.DB) gin.HandlerFunc {
 
 		c.JSON(http.StatusOK, gin.H{
 			"data": true,
+		})
+	}
+}
+
+//List user
+
+func ListUser(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var result []UserRead
+
+		if err := db.Find(&result).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"data": result,
 		})
 	}
 }
