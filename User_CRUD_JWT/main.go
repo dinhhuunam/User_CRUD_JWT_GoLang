@@ -76,7 +76,7 @@ func main() {
 			users.GET("", ListUser(db))
 			users.GET("/:id", readUserById(db))
 			users.PATCH("/:id", editUserById(db))
-			users.DELETE("/:id")
+			users.DELETE("/:id", deleteUserById(db))
 		}
 	}
 
@@ -177,5 +177,25 @@ func ListUser(db *gorm.DB) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{
 			"data": result,
 		})
+	}
+}
+
+func deleteUserById(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id, err := strconv.Atoi(c.Param("id"))
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		if err := db.Table(UserCreation{}.TableName()).
+			Where("id = ?", id).
+			Delete(nil).Error; err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"data": true})
 	}
 }
