@@ -2,6 +2,7 @@ package main
 
 import (
 	"User_CRUD_JWT/modules/item/model"
+	ginuser "User_CRUD_JWT/modules/item/transport/gin"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
@@ -74,7 +75,7 @@ func main() {
 	{
 		users := v1.Group("/users")
 		{
-			users.POST("", CreateUser(db))
+			users.POST("", ginuser.CreateUser(db))
 			users.GET("", ListUser(db))
 			users.GET("/:id", readUserById(db))
 			users.PATCH("/:id", editUserById(db))
@@ -92,28 +93,28 @@ func main() {
 
 // Create user
 
-func CreateUser(db *gorm.DB) func(*gin.Context) {
-	return func(c *gin.Context) {
-		var data model.UserCreation
-
-		//Get data from URL
-		if err := c.ShouldBind(&data); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-		if err := db.Create(&data).Error; err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{
-			"data": data,
-		})
-	}
-}
+//func CreateUser(db *gorm.DB) func(*gin.Context) {
+//	return func(c *gin.Context) {
+//		var data model.UserCreation
+//
+//		//Get data from URL
+//		if err := c.ShouldBind(&data); err != nil {
+//			c.JSON(http.StatusBadRequest, gin.H{
+//				"error": err.Error(),
+//			})
+//			return
+//		}
+//		if err := db.Create(&data).Error; err != nil {
+//			c.JSON(http.StatusBadRequest, gin.H{
+//				"error": err.Error(),
+//			})
+//			return
+//		}
+//		c.JSON(http.StatusOK, gin.H{
+//			"data": data,
+//		})
+//	}
+//}
 
 //Read item by id
 
